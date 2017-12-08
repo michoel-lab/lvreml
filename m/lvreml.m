@@ -30,5 +30,5 @@ alpha2 = Evx(1:nx);
 sigma2 = mean(Evx(nx+1:end));
 
 % Get estimate for covariate covariance matrix
-V1G = V1*inv(G1);
-B = V1G*(C11-sigma2)*V1G';
+V1G = V1/G1; % V1*inv(G1);
+B = V1G*(C11-sigma2*eye(nc2))*V1G';
