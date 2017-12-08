@@ -1,7 +1,7 @@
 function [X,alpha2,B,sigma2] = lvreml(Y,S,nx)
 % LVREML - Restricted maximum-likelihood solution for linear mixed models with known and latent variance components 
 
-ng = size(Y,2); % number of genes, samples
+ng = size(Y,2); % number of genes
 
 % Center Y and get overlap matrix
 Y = bsxfun(@minus,Y,mean(Y));
@@ -24,10 +24,9 @@ C22 = U2'*C*U2;
 [Vx,Ex] = eig(C22);
 [Evx,t] = sort(diag(Ex),'descend');
 X = U2*Vx(:,t(1:nx));
-alpha2 = Evx(1:nx);
-
-% Get estimate for residual variance
+% Get estimate for residual and latent variable variances
 sigma2 = mean(Evx(nx+1:end));
+alpha2 = Evx(1:nx)-sigma2;
 
 % Get estimate for covariate covariance matrix
 V1G = V1/G1; % V1*inv(G1);
