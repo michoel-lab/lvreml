@@ -1,7 +1,8 @@
-function [X,alpha2,B,sigma2] = lvreml(Y,S,nx)
+function [X,alpha2,B,sigma2,nc2] = lvreml(Y,S,varexpl)
 % LVREML - Restricted maximum-likelihood solution for linear mixed models with known and latent variance components 
 
 [C,S] = data_prep(Y,S);
+ns = length(C); % number of samples
 
 % Full SVD of known covariates
 [U,G,V] = svd(S);
@@ -17,13 +18,21 @@ C11 = U1'*C*U1;
 C22 = U2'*C*U2;
 
 % Get reml estimate for X, pulled-back to original space
+resvar = 1-varexpl;
 if ~isempty(C22)
     [Vx,Ex] = eig(C22);
-    [Evx,t] = sort(diag(Ex),'descend');
-    X = U2*Vx(:,t(1:nx));
+    [Evx,t] = sort(diag(Ex),'ascend');
+    % variance not explained by X, at all possible numbers of hidden factors
+    sigma2vec = cumsum(Evx)./(1:length(Evx))';
+    nx = find(sigma2vec>resvar/(1-nc2*resvar/ns),1);
+    X = U2*Vx(:,t(end:-1:nx));
     % Get estimate for residual and latent variable variances
-    sigma2 = mean(Evx(nx+1:end));
-    alpha2 = Evx(1:nx)-sigma2;
+    if nx>1
+        sigma2 = mean(Evx(1:nx-1));
+    else
+        sigma2 = 0.;
+    end
+    alpha2 = Evx(end:-1:nx)-sigma2;
 else
     X = [];
     alpha2 = [];
