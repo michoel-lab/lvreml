@@ -1,4 +1,4 @@
-function [C,Sn,Yn] = data_prep(Y,S)
+function [C,Sn,Yn,idx] = data_prep(Y,S)
 % DATA_PREP - Get expression data sample overlap and normalize covariates
 
 % Check that data is in right format (columns are variables, rows are samples)
@@ -21,3 +21,14 @@ C = (Yn*Yn')/ng;
 
 % Normalize covariates to have unit L2-norm
 Sn = bsxfun(@rdivide,S,sum(S.^2).^.5);
+
+% Check covariate matrix rank and return linearly independent subset if
+% necessary
+if nargout==4
+    [~,R,idx] = qr(S,0);
+    tol = max(size(S))*eps(max(abs(diag(R))));
+    rk = sum(abs(diag(R))>tol); % rank
+    if rk<size(S,2)
+        idx = idx(1:rk);
+    end
+end
