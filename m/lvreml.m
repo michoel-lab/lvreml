@@ -1,14 +1,15 @@
-function [X,alpha2,B,sigma2,per,loglike] = lvreml(Y,S,varexpl)
+function [X,alpha2,B,sigma2] = lvreml(Y,Z,varexpl)
 % LVREML - Restricted maximum-likelihood solution for linear mixed models with known and latent variance components 
 
-[C,S,~,per] = data_prep(Y,S);
+[C,Z] = data_prep(Y,Z);
 ns = length(C); % number of samples
+trC = sum(diag(C));
 
 % Full SVD of known covariates
-if ~isempty(S)
-    [U,G,V] = svd(S(:,per));
+if ~isempty(Z)
+    [U,G,V] = svd(Z);
     nc = rank(G); % number of linearly independent covariates
-    if nc~=length(per)
+    if nc~=size(Z,2)
         error('lvreml::lvreml::inconsitent rank estimates');
     end
     
@@ -28,38 +29,34 @@ else
    U2 = eye(size(C));
 end
 
-% Log-likelihood for space spanned by covariates
-E1 = eig(C11);
-loglike = [-sum(log(E1))-nc, 0];
+% Set the target residual variance
+resvar = min((1-varexpl)*trC/ns,min(eig(C11)));
 
-% Get reml estimate for X, pulled-back to original space
-resvar = 1-varexpl;
+% Get REML estimate for X
 if ~isempty(C22)
     [Vx,Ex] = eig(C22);
     [Evx,t] = sort(diag(Ex),'ascend');
-    % variance not explained by X, at all possible numbers of hidden factors
-    sigma2vec = cumsum(Evx)./sum(Evx);%./(1:length(Evx))';
-    nx = find(sigma2vec>resvar,1);
-    X = U2*Vx(:,t(end:-1:nx));
-    % Get estimate for residual and latent variable variances
-    if nx>1
-        sigma2 = mean(Evx(1:nx-1));
-        lsig = log(sigma2);
-    else
+    % variance not explained by X, at all possible numbers of latent
+    % variables; this is called "f(p)" in the appendix of the paper
+    sigma2vec = cumsum(Evx)./(1:length(Evx))';
+    nx = find(sigma2vec<resvar & Evx>Evx(1),1,'last');
+    if isempty(nx)
+        nx = 0;
         sigma2 = 0.;
-        lsig = 0.;
+    else
+        sigma2 = mean(Evx(1:nx));
     end
-    alpha2 = Evx(end:-1:nx)-sigma2;
-    % Log-likelihood for residual space
-    loglike(2) = -sum(log(Evx(t(end:-1:nx)))) - (nx-1)*lsig - ns + nc;
+    % pull back selected eigenvectors of C22 to original space
+    X = U2*Vx(:,t(end:-1:nx+1));
+    alpha2 = Evx(end:-1:nx+1)-sigma2;
 else
     X = [];
     alpha2 = [];
     sigma2 = 0;
 end
 
-% Get estimate for covariate covariance matrix
-if ~isempty(S)
+% Get estimate for the covariance matrix of the known confounders
+if ~isempty(Z)
     V1G = V1/G1; % V1*inv(G1);
     B = V1G*(C11-sigma2*eye(nc))*V1G';
 else
