@@ -1,7 +1,6 @@
-function [beta2,varexpl,idx] = initial_screen(Y,Z,varargin)
+function [beta2,varexpl,idx] = initial_screen(C,Z,varargin)
 % INITIAL_SCREEN - Rapid screening of univariate variance component models
 
-[C,Z] = data_prep(Y,Z);
 [ns,nc] = size(Z); % number of covariates and samples
 beta2 = zeros(nc,1);
 trC = sum(diag(C));
