@@ -19,7 +19,7 @@ else
 end
 
 % Center variables (columns of Y) to remove fixed effects on mean
-Yn = bsxfun(@minus,Y,mean(Y));
+Yn = bsxfun(@minus,Y,mean(Y,2));
 % Compute overlap matrix
 ng = size(Y,2); % number of genes
 C = (Yn*Yn')/ng;
