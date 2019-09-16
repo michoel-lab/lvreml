@@ -18,7 +18,7 @@ else
    warning('lvreml::data_prep::no covariates provided, assuming expression data is in format samples x genes'); 
 end
 
-% Center variables (columns of Y) to remove fixed effects on mean
+% Center samples (rows of Y) to remove fixed effects on mean
 Yn = bsxfun(@minus,Y,mean(Y,2));
 % Compute overlap matrix
 ng = size(Y,2); % number of genes
