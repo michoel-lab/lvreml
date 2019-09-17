@@ -26,12 +26,14 @@ if ~isempty(Z)
     if ~isempty(C22)
         [Vx,Ex] = eig(C22);
         [Evx,t] = sort(diag(Ex),'ascend');
+        Vx = Vx(:,t);
         % minimum eigenvalue on known covariate space, needed to check validity
         % of the solution
         lambdamin = min(eig(C11));
         % variance not explained by X, at all possible numbers of latent
         % variables; this is called "f(p)" in the appendix of the paper
         sigma2vec = cumsum(Evx)./(1:length(Evx))';
+        
         % check if 3rd arguments wants a given number of latent variables or
         % target variance explained; in both cases adjust to make sure the
         % solution will be valid
@@ -86,16 +88,29 @@ else
    B = [];
    D = [];
    [Vx,Ex] = eig(C);
-   [Evx,t] = sort(diag(Ex),'descend');
+   [Evx,t] = sort(diag(Ex),'ascend');
    Vx = Vx(:,t);
-   lambdamin = min(Evx(Evx>0));
-   nmax = sum(Evx>0);
+   % variance not explained by X, at all possible numbers of latent
+   % variables; this is called "f(p)" in the appendix of the paper
+   sigma2vec = cumsum(Evx)./(1:length(Evx))';
+   % check how many we need to include at least
+   nmin = find(Evx(2:end)-sigma2vec(1:end-1)>0,1,'first');
    if targetX >= 1
        nx = round(targetX); % number of latent variables
-       X = Vx(:,1:min(nx,nmax));
    elseif targetX>= 0
        varexpl = targetX; % target variance explained
+       % set the target residual variance
+       resvar = (1-varexpl)*trC/ns;
+       % find required number of latent variables
+       nx = find(sigma2vec<resvar,1,'last');
    else
        error('lvreml::lvreml::3rd argument must be integer or value between zero and one');
    end
+   nx = max(nx,nmin);
+   sigma2 = mean(Evx(1:end-nx));
+   X = Vx(:,end:-1:end-nx+1);
+   alpha2 = Evx(end:-1:end-nx+1)-sigma2;
+   % Return the covariance matrix K
+   K = X*diag(alpha2)*X' + sigma2*eye(ns);
+   K = 0.5*(K+K');
 end
