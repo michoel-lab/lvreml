@@ -26,7 +26,6 @@ if ~isempty(Z)
     if ~isempty(C22)
         [Vx,Ex] = eig(C22);
         [Evx,t] = sort(diag(Ex),'ascend');
-        Vx = Vx(:,t);
         % minimum eigenvalue on known covariate space, needed to check validity
         % of the solution
         lambdamin = min(eig(C11));
