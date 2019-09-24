@@ -19,6 +19,7 @@ if ~isempty(Z)
     U2 = U(:,nc+1:end);
     V1 = V(:,1:nc);
     
+    % Corresponding matrix blocks
     C11 = U1'*C*U1;
     C22 = U2'*C*U2;
 
@@ -33,7 +34,7 @@ if ~isempty(Z)
         % variables; this is called "f(p)" in the appendix of the paper
         sigma2vec = cumsum(Evx)./(1:length(Evx))';
         
-        % check if 3rd arguments wants a given number of latent variables or
+        % check if 3rd argument wants a given number of latent variables or
         % target variance explained; in both cases adjust to make sure the
         % solution will be valid
         if targetX >= 1
@@ -47,8 +48,8 @@ if ~isempty(Z)
             varexpl = targetX; % target variance explained
             % Set the target residual variance
             resvar = min((1-varexpl)*trC/ns,lambdamin);
-            % variance not explained by X, at all possible numbers of latent
-            % variables; this is called "f(p)" in the appendix of the paper
+            % find number of variables that need to be cut to explain no
+            % less than the target variance explained
             ncut = find(sigma2vec<resvar & Evx>Evx(1),1,'last');
         else
             error('lvreml::lvreml::3rd argument must be integer or value between zero and one');
@@ -57,6 +58,7 @@ if ~isempty(Z)
             ncut = 0;
             sigma2 = 0.;
         else
+            % estimate sigma^2 parameter
             sigma2 = mean(Evx(1:ncut));
         end
         % pull back selected eigenvectors of C22 to original space
