@@ -42,8 +42,9 @@ if ~isempty(Z)
             % find the smallest number of latent variables we must include
             % (largest number we can cut)
             ncut_max = find(sigma2vec<lambdamin & Evx>Evx(1),1,'last');
-            % cut fewer if we've asked for more latent variables
-            ncut = min(length(Evx)-nx,ncut_max);
+            % cut fewer if we've asked for more latent variables (but never
+            % less than 0)
+            ncut = min(max(length(Evx)-nx,0),ncut_max);
         elseif targetX>= 0
             varexpl = targetX; % target variance explained
             % Set the target residual variance
