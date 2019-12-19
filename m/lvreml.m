@@ -95,23 +95,26 @@ else
    % variance not explained by X, at all possible numbers of latent
    % variables; this is called "f(p)" in the appendix of the paper
    sigma2vec = cumsum(Evx)./(1:length(Evx))';
-   % check how many we need to include at least
-   nmin = find(Evx(2:end)-sigma2vec(1:end-1)>0,1,'first');
+   % check how many we need to include at least (largest possible value of
+   % excluded dimensions)
+   nmax = find(Evx(2:end)-sigma2vec(1:end-1)>0,1,'last');
+   % check how many we want to include from user input
+   % note that nx is the number of dimensions *not* to include
    if targetX >= 1
-       nx = round(targetX); % number of latent variables
+       nx = ns - round(targetX); % "nx = n-p"
    elseif targetX>= 0
        varexpl = targetX; % target variance explained
        % set the target residual variance
        resvar = (1-varexpl)*trC/ns;
        % find required number of latent variables
-       nx = find(sigma2vec<resvar,1,'last');
+       nx = find(sigma2vec<resvar,1,'last'); % "nx = n-p"
    else
        error('lvreml::lvreml::3rd argument must be integer or value between zero and one');
    end
-   nx = max(nx,nmin);
-   sigma2 = mean(Evx(1:end-nx));
-   X = Vx(:,end:-1:end-nx+1);
-   alpha2 = Evx(end:-1:end-nx+1)-sigma2;
+   nx = min(nx,nmax);
+   sigma2 = mean(Evx(1:nx));
+   X = Vx(:,end:-1:nx+1);
+   alpha2 = Evx(end:-1:nx+1)-sigma2;
    % Return the covariance matrix K
    K = X*diag(alpha2)*X' + sigma2*eye(ns);
    K = 0.5*(K+K');
