@@ -73,7 +73,7 @@ This function takes as input the lvreml sample covariance matrix K and the empir
 Issue the command
 
 ```matlab
->> help *function_name*
+>> help function_name
 ```
 
 on the Matlab command line for more detailed help and usage instructions for each package function.
