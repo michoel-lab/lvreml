@@ -4,5 +4,4 @@ function L = loglike(K,C)
 [V,D] = eig(K);
 Ev = diag(D);
 
-L = -sum(log(Ev)) - sum(diag(inv(D)*V'*C*V));
-%L = - sum(diag(inv(D)*V*C*V'));
+L = -sum(log(Ev)) - sum(diag(D.^(-1)*V'*C*V));
