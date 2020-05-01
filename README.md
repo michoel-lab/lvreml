@@ -37,6 +37,13 @@ Both the Matlab and Python versions contain the same functions:
 
 #### data_prep
 
+**data_prep** takes as input matrices of gene expression (Y) and known covariate data (Z) and performs basic sanity checks and data preparation tasks:
+
+* Data matrices needs to be in the format where columns represent variables and rows represent samples. **data_prep** checks whether this is the case by checking along which dimension Y and Z have the same size. Beyond this, the package assumes that all data are in the right format, that is, the samples in Y and Z are aligned such that data from the same sample is in the same row in both matrices.
+* Expression data is centred such that each sample has mean zero to remove systematic effects on the sample mean.
+* The sample covariance matrix for the expression data is calculated.
+* The covariate data are normalized to have unit L2 norm for each variable.
+
 #### initial_screen
 
 ### Help
