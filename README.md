@@ -35,6 +35,10 @@ Both the Matlab and Python versions contain the same functions:
 * **loglike**
 * **lvreml**
 
+#### data_prep
+
+#### initial_screen
+
 ### Help
 
 
