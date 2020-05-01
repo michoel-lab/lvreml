@@ -22,4 +22,19 @@ Add the directory containing the m-files ([./m/](./m/)) to the Matlab search pat
 
 on the matlab command line.
 
+### Python
+
+## Usage
+
+### Package content
+
+Both the Matlab and Python versions contain the same functions:
+
+* **data_prep**
+* **initial_screen**
+* **loglike**
+* **lvreml**
+
+### Help
+
 
