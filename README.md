@@ -49,11 +49,18 @@ The expression covariance matrix, and centred/normalized data are returned for u
 
 #### initial_screen
 
-This function performs a rapid screening of univariate variance component models to calculate the variance explained by each known covariate on its own. Optionally, a linearly independent subset of covariates with variance explained greater than a user-defined threshold is computed.
+This function performs a rapid screening of univariate variance component models to calculate the variance explained by each known covariate on its own. Optionally, a linearly independent subset of covariates with variance explained greater than a user-defined threshold is computed. This filtering of covariates is necessary when the number of potential known covariates exceeds the number of samples, and the known covariates would explain *all* of the variation in the expression data.
 
 #### lvreml
 
-This is the main package function.
+This is the main package function. It takes as input matrices of gene expression (Y) and known covariate data (Z), and a target value for the total variance in Y explained by the known and latent variables combined. The data_prep function is called from within lvreml, and need not be called beforehand. Any preselection of covariates needs to be performed beforehand - the lvreml function will include all covariates in Z in the final model. The lvreml function performs basic linear algebra operations as explained in the supplementary information of the paper, and returns:
+
+* X: a matrix of latent variable data (rows are samples, columns are variables), also called X in the paper.
+* alpha2: a vector of variance explained by each latent variable; this is the diagonal of the diagonal matrix A in the paper.
+* B: a matrix of covariances among the known covariates, also called B in the paper.
+* D: a matrix of covariances between known and latent variables, also called D in the paper.
+* sigma2: the squared residual variance.
+* K: the restricted maximum-likelihood sample covariance matrix inferred by the method, also called K in the paper.
 
 #### loglike
 
