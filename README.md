@@ -14,6 +14,10 @@ A copy of the paper and supplementary information is also available in the [pape
 
 ### Matlab
 
-Add the directory containing the m-files ([./m/](./m/)) to the Matlab search path:
+Add the directory containing the m-files ([./m/](./m/)) to the Matlab search path: if you cloned or downloaded the repository to a directory *some_path/lvreml/*, then issue the command
+
+```matlab
+addpath(some_path/lvreml/m)
+```
 
 
