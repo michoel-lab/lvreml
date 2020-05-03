@@ -9,9 +9,9 @@ function [beta2,varexpl,idx] = initial_screen(C,Z,varargin)
 %        [beta2,varexpl,idx] = initial_screen(C,Z,theta)
 %
 % INPUT: C - (n x n) empirical sample covariance matrix of expression data, 
-%            see also function data_prep
+%            see also data_prep
 %        Z - (n x d) matrix of normalized data for d covariates (known
-%            confounders) in n samples, see also function data_prep
+%            confounders) in n samples, see also data_prep
 %
 % OUTPUT: beta2   - (d x 1) vector, variance parameter in univariate lvreml
 %                   model for each covariate, see Section S4 of the paper
