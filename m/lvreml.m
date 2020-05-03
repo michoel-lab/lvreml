@@ -1,5 +1,42 @@
 function [X,alpha2,B,D,sigma2,K] = lvreml(Y,Z,targetX)
 % LVREML - Restricted maximum-likelihood solution for linear mixed models with known and latent variance components 
+% LVREML computes the restricted maximum-likelihood solution for linear mixed 
+% models with known and latent variance components  Details and rationale are in
+% Sections S2, S4-S7 of the paper.
+% 
+% USAGE: [X,alpha2,B,D,sigma2,K] = lvreml(Y,Z,targetX)
+%
+% INPUT: Y       - (n x m) matrix of expression data for m genes in n samples, 
+%                  see also function data_prep
+%        Z       - (n x d) matrix of normalized data for d covariates (known
+%                  confounders) in n samples, see also function data_prep
+%        targetX - number, interpreted as target number of latent
+%                  variables (targetX > 1), or target value for the total
+%                  variance in Y explained by the model (0<=targetX<=1)
+%
+% OUTPUT: X      - (n x p) matrix of latent variable data (rows are
+%                  samples, columns are variables, p is automatically 
+%                  determined), also called X in the paper.
+%         alpha2 - (p x 1) vector of variance explained by each latent
+%                  variable; this is the diagonal of the diagonal matrix A
+%                  in the paper.  
+%         B      - (d x d) matrix of covariances among the known
+%                  covariates, also called B in the paper.
+%         D      - (d x p) matrix of covariances between known and latent
+%                  variables, also called D in the paper.
+%         sigma2 - the squared residual variance
+%         K      - the restricted maximum-likelihood sample covariance
+%                  matrix
+%
+% AUTHOR: Tom Michoel
+%         tom.michoel@uib.no
+%         https://lab.michoel.info
+%
+% REFERENCE: MA Malik and T Michoel. Restricted maximum-likelihood method
+% for learning latent variance components in gene expression data with
+% known and unknown confounders. 
+%
+% LICENSE: GNU GPL v3
 
 [C,Z] = data_prep(Y,Z);
 ns = length(C); % number of samples
