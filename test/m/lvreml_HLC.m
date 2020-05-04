@@ -39,7 +39,7 @@ Zall = double(geno.data(tf_snp,isnp))';
 tf_gene = sum(isnan(expr.data(:,iexpr)),2)==0;
 Y = expr.data(tf_gene,iexpr)';
 
-%% LVREML application
+%% LVREML basic examples
 %
 %%
 % Prepare the data:
@@ -59,5 +59,46 @@ Z = Znall(:,idx);
 %%
 % Run lvreml with a target variance explained of 50%, and compute the
 % log-likelihood:
+[X,alpha2,B,D,sigma2,K]=lvreml(Yn,Z,0.5);
+disp(loglike(K,C))
+%%
+% Run lvreml with a target number of 100 latent variables, and compute the
+% log-likelihood:
 [X,alpha2,B,D,sigma2,K]=lvreml(Yn,Z,100);
 disp(loglike(K,C))
+
+%% LVREML with PCs as known covariates
+% As in Fig 2(A) of the paper, we will use principal components as known
+% covariates to test whether the known optimal latent variables (also
+% principal components) are found.
+%%
+% Get the PCs using SVD on the expression data
+[U,S,V] = svd(Yn,'econ');
+%%
+% 
+numKnown = [0,5,10,20]; nk = length(numKnown);
+numLatent = 0:2:120; nl = length(numLatent);
+ll = zeros(nl,nk);
+tic;
+for k = 1:nk 
+   for l = 1:nl 
+       [X,alpha2,B,D,sigma2,K]=lvreml(Yn,U(:,1:numKnown(k)),l);
+       ll(l,k) = loglike(K,C);
+   end
+end
+rt=toc;
+%%
+% Note the runtime:
+fprintf('Used %1.2f sec. for %d lvreml calls, average %1.3f sec. per call.\n', ...
+    rt, nl*nk, rt/(nl*nk));
+%%
+% Plot the log-likelihood values
+plot(numLatent,ll,'.-','markersize',15)
+set(gca,'fontsize',12,'box','off','linewidth',1.5)
+grid
+lgd = legend({'0','5','10','20'},'location','southeast');
+lgd.Title.String = 'No. PCs as known covariates';
+lgd.Title.FontSize = 14;
+lgd.FontSize = 12;
+xlabel('Number of latent variables','fontsize',16);
+ylabel('Log-likelihood','fontsize',16)
