@@ -16,11 +16,11 @@ addpath(lvreml_dir);
 % the data in several mat-files:
 %% 
 % Load the genotype data:
-geno = load('../../data/Human_Liver_Cohort/genotype.mat');
+geno = load('~/Projects/current/lmm-gws/data/Human_Liver_Cohort/genotype.mat');
 disp(geno);
 %% 
 % Load the expression data:
-expr = load('../../data/Human_Liver_Cohort/expression.mat');
+expr = load('~/Projects/current/lmm-gws/data/Human_Liver_Cohort/expression.mat');
 disp(expr);
 
 %% Process the data
@@ -79,17 +79,19 @@ disp(loglike(K,C))
 numKnown = [0,5,10,20]; nk = length(numKnown);
 numLatent = 0:2:120; nl = length(numLatent);
 ll = zeros(nl,nk);
+lp = zeros(nl,nk);
 tic;
 for k = 1:nk 
    for l = 1:nl 
-       [X,alpha2,B,D,sigma2,K]=lvreml(Yn,U(:,1:numKnown(k)),l);
+       [X,alpha2,B,D,sigma2,K]=lvreml(Yn,U(:,1:numKnown(k)),numLatent(l));
        ll(l,k) = loglike(K,C);
+       lp(l,k) = size(X,2);
    end
 end
 rt=toc;
 %%
 % Note the runtime:
-fprintf('Used %1.2f sec. for %d lvreml calls, average %1.3f sec. per call.\n', ...
+fprintf('Used %1.2f sec. for %d calls to lvreml and loglike, average %1.3f sec. per call.\n', ...
     rt, nl*nk, rt/(nl*nk));
 %%
 % Plot the log-likelihood values
@@ -98,6 +100,47 @@ set(gca,'fontsize',12,'box','off','linewidth',1.5)
 grid
 lgd = legend({'0','5','10','20'},'location','southeast');
 lgd.Title.String = 'No. PCs as known covariates';
+lgd.Title.FontSize = 14;
+lgd.FontSize = 12;
+xlabel('Number of latent variables','fontsize',16);
+ylabel('Log-likelihood','fontsize',16)
+
+%% LVREML with SNPs as known covariates
+% As in Fig 2(C) of the paper, we will use selected SNPs as known
+% covariates.
+%%
+%
+numKnown = [0,5,10,20]; nk = length(numKnown);
+numLatent = 0:2:120; nl = length(numLatent);
+ll = zeros(nl,nk);
+lp = zeros(nl,nk);
+tic;
+for k = 1:nk
+   for l = 1:nl 
+       [X,alpha2,B,D,sigma2,K]=lvreml(Yn,Z(:,1:numKnown(k)),numLatent(l));
+       ll(l,k) = loglike(K,C);
+       lp(l,k) = size(X,2);
+   end
+end
+rt=toc;
+%%
+% Note the runtime:
+fprintf('Used %1.2f sec. for %d calls to lvreml and loglike, average %1.3f sec. per call.\n', ...
+    rt, nl*nk, rt/(nl*nk));
+%%
+% Plot the log-likelihood values. We need to be careful because the
+% effective number of latent variables does not always equal the target
+% number
+plot(lp(:,1),ll(:,1),'.-','markersize',15)
+hold on
+for k=2:nk
+    plot(lp(:,k),ll(:,k),'.-','markersize',15)
+end
+hold off
+set(gca,'fontsize',12,'box','off','linewidth',1.5)
+grid
+lgd = legend({'0','5','10','20'},'location','southeast');
+lgd.Title.String = 'No. SNPs as known covariates';
 lgd.Title.FontSize = 14;
 lgd.FontSize = 12;
 xlabel('Number of latent variables','fontsize',16);

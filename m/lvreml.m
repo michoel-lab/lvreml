@@ -11,8 +11,8 @@ function [X,alpha2,B,D,sigma2,K] = lvreml(Y,Z,targetX)
 %        Z       - (n x d) matrix of normalized data for d covariates (known
 %                  confounders) in n samples, see also data_prep
 %        targetX - number, interpreted as target number of latent
-%                  variables (targetX > 1), or target value for the total
-%                  variance in Y explained by the model (0<=targetX<=1)
+%                  variables (targetX >= 1), or target value for the total
+%                  variance in Y explained by the model (0<=targetX<1)
 %
 % OUTPUT: X      - (n x p) matrix of latent variable data (rows are
 %                  samples, columns are variables, p is automatically 
