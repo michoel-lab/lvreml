@@ -31,7 +31,7 @@ disp(expr);
 %%
 % Select SNPs by call rate, MAF, HWE and autosomes:
 [cr,maf,hwe] = snpselect(geno.data(:,isnp));
-tf_snp = cr==1 & maf>=0.05 & hwe>1e-6 & geno.features.chrom(geno.feature_idx)~=0;
+tf_snp = cr==1 & maf>=0.2 & hwe>1e-6 & geno.features.chrom(geno.feature_idx)~=0;
 snps = find(tf_snp);
 Zall = double(geno.data(tf_snp,isnp))';
 %%
@@ -44,11 +44,13 @@ Y = expr.data(tf_gene,iexpr)';
 %%
 % Prepare the data:
 [C,Znall,Yn]=data_prep(Y,Zall);
+%[C,Znall,Yn]=data_prep(Y,zscore(Zall));
 %%
 % Perform an initial screen of covariates (SNPs), and keep only a linearly
 % independent subset of SNPs that explain at least 18.8% of the variance in
 % Y on their own
-[beta2,varexpl,idx]=initial_screen(C,Znall,.188);
+[beta2,varexpl,idx]=initial_screen(C,Znall,.176);
+%[beta2,varexpl,idx]=initial_screen(C,Znall,.005);
 %%
 % Show a histogram of the variance explained by each SNP:
 histogram(varexpl)
@@ -76,7 +78,7 @@ disp(loglike(K,C))
 [U,S,V] = svd(Yn,'econ');
 %%
 % 
-numKnown = [0,5,10,20]; nk = length(numKnown);
+numKnown = [0,1,5,10,20]; nk = length(numKnown);
 numLatent = 0:2:120; nl = length(numLatent);
 ll = zeros(nl,nk);
 lp = zeros(nl,nk);
@@ -98,7 +100,7 @@ fprintf('Used %1.2f sec. for %d calls to lvreml and loglike, average %1.3f sec. 
 plot(numLatent,ll,'.-','markersize',15)
 set(gca,'fontsize',12,'box','off','linewidth',1.5)
 grid
-lgd = legend({'0','5','10','20'},'location','southeast');
+lgd = legend({'0','1','5','10','20'},'location','southeast');
 lgd.Title.String = 'No. PCs as known covariates';
 lgd.Title.FontSize = 14;
 lgd.FontSize = 12;
@@ -145,3 +147,19 @@ lgd.Title.FontSize = 14;
 lgd.FontSize = 12;
 xlabel('Number of latent variables','fontsize',16);
 ylabel('Log-likelihood','fontsize',16)
+
+%% Overlap between PCs and SNPs or latent variables
+% As in Figure 3(A) of the paper, plot the overlap between PCs of the
+% expression data with known and latent covariates inferred by lvreml.
+%%
+% Run lvreml with 5 known and 20 latent covariates 
+[X,alpha2,B,D,sigma2,K]=lvreml(Yn,Z(:,1:5),20);
+%%
+% Plot overlap values with first 10 PCs
+bar([U(:,1:10)'*[Z(:,1) X(:,1)]])
+set(gca,'fontsize',12,'box','off','linewidth',1.5)
+grid
+lgd = legend({'z_1', 'x_1'});
+lgd.FontSize = 12;
+xlabel('Expression data PC','fontsize',16);
+ylabel('Overlap value (inner product)','fontsize',16)
