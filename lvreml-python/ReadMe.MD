@@ -9,4 +9,6 @@
 (Change the location inside recode_geno.py, to where you have saved genotype data,\
 Skip this step if you already have data in desired format)
 5. Run the <code>lvreml_HLC.py</code> script (remember to change the file locations).\
-<code>python lvreml_HLC</code>
+<code>python lvreml_HLC.py</code>
+6. To uninstall the package from your environment\
+<code>pip uninstall lvreml</code>
