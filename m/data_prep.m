@@ -1,19 +1,20 @@
-function [C,Zn,Yn] = data_prep(Y,Z)
+function [C,Yn,Zn] = data_prep(Y,Z)
 % DATA_PREP - Prepare expression and known covariate data for use in lvreml functions
 % DATA_PREP prepares the expression and known covariate data for use in
 % other functions of the lvreml package. Details and rationale are in
 % Section S2 of the paper.
 % 
-% USAGE: [C,Zn,Yn] = data_prep(Y,Z)
+% USAGE: [C,Yn,Zn] = data_prep(Y,Z)
 %
 % INPUT: Y - (n x m) matrix of expression data for m genes in n samples
 %        Z - (n x d) matrix of data for d covariates (known confounders) in
 %            n samples
 %
 % OUTPUT: C  - empirical sample covariance matrix for the expression data,
+%         Yn - centred expression data (all samples centred to have mean zero)   
 %         Zn - normalized covariate data (all variables scaled to have unit
 %              L2 norm)
-%         Yn - centred expression data (all samples centred to have mean zero)   
+%         
 %
 % AUTHOR: Tom Michoel
 %         tom.michoel@uib.no

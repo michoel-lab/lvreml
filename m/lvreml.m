@@ -1,15 +1,18 @@
-function [X,alpha2,B,D,sigma2,K] = lvreml(Y,Z,targetX)
+function [X,alpha2,B,D,sigma2,K] = lvreml(C,Z,targetX)
 % LVREML - Restricted maximum-likelihood solution for linear mixed models with known and latent variance components 
 % LVREML computes the restricted maximum-likelihood solution for linear mixed 
 % models with known and latent variance components  Details and rationale are in
 % Sections S2, S4-S7 of the paper.
-% 
-% USAGE: [X,alpha2,B,D,sigma2,K] = lvreml(Y,Z,targetX)
 %
-% INPUT: Y       - (n x m) matrix of expression data for m genes in n samples, 
-%                  see also data_prep
-%        Z       - (n x d) matrix of normalized data for d covariates (known
-%                  confounders) in n samples, see also data_prep
+% IMPORTANT NOTE: Input parameters C and Z must be scaled and normalized
+% using the "data_prep" function to ensure correct output!
+% 
+% USAGE: [X,alpha2,B,D,sigma2,K] = lvreml(C,Z,targetX)
+%
+% INPUT: C       - (n x n) sample covariance matrix of expression data for
+%                  m genes in n samples, see also data_prep
+%        Z       - (n x d) matrix of L1-normalized data for d covariates
+%                  (known confounders) in n samples, see also data_prep
 %        targetX - number, interpreted as target number of latent
 %                  variables (targetX >= 1), or target value for the total
 %                  variance in Y explained by the model (0<=targetX<1)
@@ -38,7 +41,6 @@ function [X,alpha2,B,D,sigma2,K] = lvreml(Y,Z,targetX)
 %
 % LICENSE: GNU GPL v3
 
-[C,Z] = data_prep(Y,Z);
 ns = length(C); % number of samples
 trC = sum(diag(C));
 
@@ -47,7 +49,7 @@ if ~isempty(Z)
     [U,G,V] = svd(Z);
     nc = rank(G); % number of linearly independent covariates
     if nc~=size(Z,2)
-        error('lvreml::lvreml::inconsitent rank estimates');
+        error('lvreml::lvreml::inconsistent rank estimates');
     end
     
     % Split in space spanned by covariates and orthogonal complement
@@ -112,8 +114,8 @@ if ~isempty(Z)
     V1G = V1/G1; % V1*inv(G1);
     B = V1G*(C11-sigma2*eye(nc))*V1G';
     
-    % Get estimates for the covariance matrix between the known confounders and
-    % latent variables
+    % Get estimates for the covariance matrix between the known confounder
+    % and latent variable effects
     if ~isempty(X)
         D = V1G*U1'*C*X;
     else

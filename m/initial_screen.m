@@ -2,8 +2,9 @@ function [beta2,varexpl,idx] = initial_screen(C,Z,varargin)
 % INITIAL_SCREEN - Rapid screening of univariate variance component models
 % INITIAL_SCREEN screens known covariates for possible filtering before
 % applying the lvreml function. Screening is based on estimating the
-% variance explained by each covariate alone. Details and rationale are in
-% Section S4 of the paper.
+% variance explained by each covariate alone, followed by a pruning step to 
+% obtain a set of non-redundant, linearly independent set of covariates. 
+% Details and rationale are in Section S4 of the paper.
 % 
 % USAGE: [beta2,varexpl] = initial_screen(C,Z)
 %        [beta2,varexpl,idx] = initial_screen(C,Z,theta)
@@ -17,9 +18,9 @@ function [beta2,varexpl,idx] = initial_screen(C,Z,varargin)
 %                   model for each covariate, see Section S4 of the paper
 %         varexpl - (d x 1) vector, variance in C explained by each
 %                   covariate (= beta2/tr(C))
-%         idx     - a linearly independent subset of covariates with 
-%                   varexpl>theta, only returned if number of input arguments 
-%                   equals 3  
+%         idx     - indices for a subset of linearly independent covariates
+%                   with varexpl>=theta, only returned if number of input
+%                   arguments equals 3  
 %
 % AUTHOR: Tom Michoel
 %         tom.michoel@uib.no
@@ -38,13 +39,17 @@ trC = sum(diag(C));
 for k=1:nc
     beta2(k) = ns*Z(:,k)'*C*Z(:,k)/(ns-1) - trC/(ns-1);
 end
-% the solution only holds if beta2
+% the solution only holds if beta2 > 0
+beta2(beta2<0) = 0; 
 varexpl(beta2>0) = beta2(beta2>0)./trC;
 
 
-% get best linearly independent set with varexpl>threshold, if necessary
+% get a non-redundant, linearly independent set with varexpl>threshold, if
+% necessary 
 if nargout==3 && nargin==3
-    vcut = varargin{1};
+    % get minimum variance explained 
+    vcut = varargin{1}; 
+    % sort by variance explained and keep only linearly independent ones
     [vs,t] = sort(varexpl,'descend');
     idx = t(vs>vcut);
     for k=2:length(idx)
