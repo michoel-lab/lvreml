@@ -6,7 +6,7 @@
 
 [MA Malik](https://www.uib.no/en/persons/Muhammad.Ammar.Malik) and [T Michoel](https://lab.michoel.info). *Restricted maximum-likelihood method for learning latent variance components in gene expression data with known and unknown confounders.*
 
-A copy of the paper and supplementary information is also available in the [paper](./paper/) directory of this repository.
+A copy of the paper and supplementary information is also available on [arXiv](https://arxiv.org/abs/2005.02921) or [bioRxiv](https://doi.org/10.1101/2020.05.06.080648).
 
 **lvreml** is available for Matlab and Python.
 
