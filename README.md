@@ -62,7 +62,7 @@ The expression covariance matrix, and centred/normalized data are returned for u
 
 #### initial_screen
 
-This function performs a rapid screening of univariate variance component models to calculate the variance explained by each known covariate on its own. Optionally, a linearly independent subset of covariates with variance explained greater than a user-defined threshold is computed. This filtering of covariates is necessary when the number of potential known covariates exceeds the number of samples, and the known covariates would explain *all* of the variation in the expression data.
+This function performs a rapid screening of univariate variance component models to calculate the variance explained by each known covariate on its own. Optionally, a linearly independent subset of covariates with variance explained greater than a user-defined threshold is computed. If the number of potential known covariates is very large (for instance, using genetic variants as known covariates for infer latent confounders in gene expression data), then it is recommended to perform this covariate filtering on principal components of the covariate matrix (genotype PCs in the example) and use selected covariate PCs as covariates in the model. This overcomes problems associated with including linearly independent yet highly correlated covariates in the model.
 
 #### lvreml
 
