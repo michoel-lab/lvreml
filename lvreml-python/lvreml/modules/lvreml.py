@@ -1,20 +1,53 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
 """
-Created on Thu Sep 26 12:41:24 2019
+LVREML - Restricted maximum-likelihood solution for linear mixed models with known and latent variance components
+LVREML computes the restricted maximum-likelihood solution for linear mixed 
+models with known and latent variance components  Details and rationale are in
+Sections S2, S4-S7 of the paper.
 
-@author: ammar
+IMPORTANT NOTE: Input parameters C and Z must be scaled and normalized
+using the "data_prep" function to ensure correct output!
+
+USAGE: [X,alpha2,B,D,sigma2,K] = lvreml(C,Z,targetX)
+
+INPUT: C       - (n x n) sample covariance matrix of expression data for
+                 m genes in n samples, see also data_prep
+       Z       - (n x d) matrix of L1-normalized data for d covariates
+                 (known confounders) in n samples, see also data_prep
+       targetX - number, interpreted as target number of latent
+                 variables (targetX >= 1), or target value for the total
+                 variance in Y explained by the model (0<=targetX<1)
+OUTPUT: X      - (n x p) matrix of latent variable data (rows are
+                 samples, columns are variables, p is automatically 
+                 determined), also called X in the paper.
+        alpha2 - (p x 1) vector of variance explained by each latent
+                 variable; this is the diagonal of the diagonal matrix A
+                 in the paper.  
+        B      - (d x d) matrix of covariances among the known
+                 covariates, also called B in the paper.
+        D      - (d x p) matrix of covariances between known and latent
+                 variables, also called D in the paper.
+        sigma2 - the squared residual variance
+        K      - the restricted maximum-likelihood sample covariance
+                 matrix
+                 
+AUTHOR: Muhammad Ammar Malik
+        muhammad.malik@uib.no
+        https://ammarmalik93.github.io/
+
+REFERENCE: MA Malik and T Michoel. Restricted maximum-likelihood method
+for learning latent variance components in gene expression data with
+known and unknown confounders. 
 """
 
 import numpy as np
 from .data_prep import data_prep
 
-def lvreml(Y,Z,targetX):
+def lvreml(C,Z,targetX):
     # LVREML - Restricted maximum-likelihood solution
     # for linear mixed models with known and latent
     # variance components
     
-    C,Z,_ = data_prep(Y,Z)
+    # C,Z,_ = data_prep(Y,Z)
     ns = len(C) # number of samples
     trC = np.trace(C)
     
