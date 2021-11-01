@@ -1,9 +1,31 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
 """
-Created on Wed May 22 18:35:40 2019
+INITIAL_SCREEN - Rapid screening of univariate variance component models
+INITIAL_SCREEN screens known covariates for possible filtering before
+applying the lvreml function. Screening is based on estimating the
+variance explained by each covariate alone, followed by a pruning step to 
+obtain a set of non-redundant, linearly independent set of covariates. 
+Details and rationale are in Section S4 of the paper.
 
-@author: ammar
+USAGE: [beta2,varexpl] = initial_screen(C,Z)
+       [beta2,varexpl,idx] = initial_screen(C,Z,theta)
+INPUT: C - (n x n) empirical sample covariance matrix of expression data, 
+           see also data_prep
+       Z - (n x d) matrix of normalized data for d covariates (known
+           confounders) in n samples, see also data_prep
+OUTPUT: beta2   - (d x 1) vector, variance parameter in univariate lvreml
+                  model for each covariate, see Section S4 of the paper
+        varexpl - (d x 1) vector, variance in C explained by each
+                  covariate (= beta2/tr(C))
+        idx     - indices for a subset of linearly independent covariates
+                  with varexpl>=theta, only returned if number of input
+                  arguments equals 3
+                  
+AUTHOR: Muhammad Ammar Malik
+        muhammad.malik@uib.no
+        https://ammarmalik93.github.io/
+REFERENCE: MA Malik and T Michoel. Restricted maximum-likelihood method
+for learning latent variance components in gene expression data with
+known and unknown confounders. 
 """
 import numpy as np
 from numpy.linalg import matrix_rank
