@@ -23,19 +23,10 @@ Add the directory containing the m-files ([./m/](./m/)) to the Matlab search pat
 on the matlab command line.
 
 ### Python
-1. Clone the respository.
-2. Change your current directory in command line using\
-<code>cd ~/lvreml/lvreml-python/</code>
-3. Run the following command to install the lvreml package\
-<code>pip install .</code>
-4. Convert genotype data to 0,1,2 format by running\
-<code>python recode_geno.py</code>\
-(Change the location inside recode_geno.py, to where you have saved genotype data,\
-Skip this step if you already have data in desired format)
-5. Run the <code>lvreml_HLC.py</code> script (remember to change the file locations).\
-<code>python lvreml_HLC.py</code>
-6. To uninstall the package from your environment\
-<code>pip uninstall lvreml</code>
+1. Install the LVREML-Python package using: <code> pip install LVREML </code>
+2. Run the notebook named LVREML_tutorial.ipynb to run the analysis on yeast data.
+3. Source code for the LVREML-Python package can be accessed [here.](https://github.com/michoel-lab/LVREML-Python) 
+
 
 ## Usage
 
