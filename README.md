@@ -24,7 +24,7 @@ on the matlab command line.
 
 ### Python
 1. Install the LVREML-Python package using: <code> pip install LVREML </code>
-2. Run the notebook named LVREML_tutorial.ipynb to run the analysis on yeast data.
+2. Run the notebook [LVREML_tutorial.ipynb](https://github.com/michoel-lab/LVREML-Python/blob/main/LVREML_tutorial.ipynb) to run the analysis on yeast data.
 3. Source code for the LVREML-Python package can be accessed [here.](https://github.com/michoel-lab/LVREML-Python) 
 
 
